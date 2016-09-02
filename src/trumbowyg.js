@@ -1480,7 +1480,7 @@ jQuery.trumbowyg = {
                 }
             }
 
-            documentSelection.removeAllRanges();
+            t.removeAllRanges();
             documentSelection.addRange(range || savedRange);
         },
         getRangeText: function () {
@@ -1514,10 +1514,16 @@ jQuery.trumbowyg = {
                     ranges.push(range);
                 }
 
-                documentSelection.removeAllRanges();
+                t.removeAllRanges();
                 for (i=0; i<ranges.length; i+=1) {
                     documentSelection.addRange(ranges[i]);
                 }
+            }
+        },
+        removeAllRanges: function() {
+            var sel = t.doc.getSelection();
+            if (sel.rangeCount > 0 && sel.getRangeAt(0).getClientRects().length > 0) {
+                sel.removeAllRanges();
             }
         },
 
