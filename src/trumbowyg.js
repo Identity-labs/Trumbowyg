@@ -139,6 +139,9 @@ jQuery.trumbowyg = {
         t.$ta = $(editorElem); // $ta : Textarea
         t.$c = $(editorElem); // $c : creator
 
+        // semanticCode callback
+        t.scc = null;
+
         options = options || {};
 
         // Localization management
@@ -566,7 +569,10 @@ jQuery.trumbowyg = {
                     if (e.ctrlKey && (e.which === 89 || e.which === 90)) {
                         t.$c.trigger('tbwchange');
                     } else if (!ctrl && e.which !== 17 && !composition) {
-                        t.semanticCode(false, e.which === 13);
+                        clearTimeout(t.scc);
+                        t.scc = setTimeout(function(){
+                            t.semanticCode(false, e.which === 13);
+                        }, 1000);
                         t.$c.trigger('tbwchange');
                     }
 
@@ -1521,7 +1527,7 @@ jQuery.trumbowyg = {
             }
         },
         removeAllRanges: function() {
-            var sel = t.doc.getSelection();
+            var sel = this.doc.getSelection();
             if (sel.rangeCount > 0 && sel.getRangeAt(0).getClientRects().length > 0) {
                 sel.removeAllRanges();
             }
