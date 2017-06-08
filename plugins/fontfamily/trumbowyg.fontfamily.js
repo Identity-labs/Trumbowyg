@@ -21,7 +21,7 @@
         langs: {
             // jshint camelcase:false
             en: {
-                fontFamily: 'Font'
+                fontFamily: 'F'
             },
             nl: {
                 fontFamily: 'Lettertype'
@@ -35,6 +35,7 @@
         plugins: {
             fontfamily: {
                 init: function (trumbowyg) {
+                	console.log(trumbowyg.lang)
                     trumbowyg.addBtnDef('fontfamily', {
                         dropdown: buildDropdown(trumbowyg),
                         hasIcon: false,

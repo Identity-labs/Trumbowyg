@@ -5,7 +5,7 @@
         langs: {
             // jshint camelcase:false
             en: {
-                fontsize: 'Font size',
+                fontsize: 'S',
                 fontsizes: {
                     'x-small': 'Extra Small',
                     'small': 'Small',
@@ -28,13 +28,20 @@
     });
     // jshint camelcase:true
 
+    var defaultOptions = {
+        sizeList: ['x-small', 'small', 'medium', 'large', 'x-large']
+    };
+    
     // Add dropdown with font sizes
     $.extend(true, $.trumbowyg, {
         plugins: {
             fontsize: {
                 init: function (trumbowyg) {
+                	trumbowyg.o.plugins.fontsize = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.fontsize || {});
                     trumbowyg.addBtnDef('fontsize', {
-                        dropdown: buildDropdown(trumbowyg)
+                        dropdown: buildDropdown(trumbowyg),
+                        hasIcon: false,
+                        text: trumbowyg.lang.fontsize
                     });
                 }
             }
@@ -42,11 +49,10 @@
     });
     function buildDropdown(trumbowyg) {
         var dropdown = [];
-        var sizes = ['x-small', 'small', 'medium', 'large', 'x-large'];
 
-        $.each(sizes, function(index, size) {
+        $.each(trumbowyg.o.plugins.fontsize.sizesList, function(index, size) {
             trumbowyg.addBtnDef('fontsize_' + size, {
-                text: '<span style="font-size: ' + size + ';">' + trumbowyg.lang.fontsizes[size] + '</span>',
+                text: '<span style="font-size: ' + size + ';">' + (trumbowyg.lang.fontsizes[size]?trumbowyg.lang.fontsizes[size]:size) + '</span>',
                 hasIcon: false,
                 fn: function(){
                     trumbowyg.expandRange();
