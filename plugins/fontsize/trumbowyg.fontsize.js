@@ -5,24 +5,10 @@
         langs: {
             // jshint camelcase:false
             en: {
-                fontsize: 'S',
-                fontsizes: {
-                    'x-small': 'Extra Small',
-                    'small': 'Small',
-                    'medium': 'Regular',
-                    'large': 'Large',
-                    'x-large': 'Extra Large'
-                }
+                fontsize: 'S'
             },
             nl: {
-                fontsize: 'Lettergrootte',
-                fontsizes: {
-                    'x-small': 'Extra Klein',
-                    'small': 'Klein',
-                    'medium': 'Normaal',
-                    'large': 'Groot',
-                    'x-large': 'Extra Groot'
-                }
+                fontsize: 'Lettergrootte'
             }
         }
     });
@@ -31,6 +17,20 @@
     var defaultOptions = {
         sizeList: ['x-small', 'small', 'medium', 'large', 'x-large']
     };
+    
+
+    function tagHandler(element, trumbowyg) {
+        var tags = [];
+
+        if (element.style.fontSize !== '') {
+            var fontSize = element.style.fontSize;
+            if (trumbowyg.o.plugins.fontsize.sizeList.indexOf(fontSize) >= 0) {
+                tags.push('fontsize_' + fontSize);
+            }
+        }
+
+        return tags;
+    }
     
     // Add dropdown with font sizes
     $.extend(true, $.trumbowyg, {
@@ -43,7 +43,8 @@
                         hasIcon: false,
                         text: trumbowyg.lang.fontsize
                     });
-                }
+                },
+                tagHandler: tagHandler
             }
         }
     });
@@ -52,16 +53,48 @@
 
         $.each(trumbowyg.o.plugins.fontsize.sizesList, function(index, size) {
             trumbowyg.addBtnDef('fontsize_' + size, {
-                text: '<span style="font-size: ' + size + ';">' + (trumbowyg.lang.fontsizes[size]?trumbowyg.lang.fontsizes[size]:size) + '</span>',
+                text: '<span style="font-size: ' + size + ';">' + size + '</span>',
                 hasIcon: false,
                 fn: function(){
-                    trumbowyg.expandRange();
-                    trumbowyg.execCmd('fontSize', index+1, true);
+                	try{
+	                    trumbowyg.saveRange();
+	                    var text = trumbowyg.getRangeText();
+	                    if (text.replace(/\s/g, '') !== '') {
+                            var curtag = getSelectionParentElement().tagName.toLowerCase();
+                            if(curtag != 'span'){
+                            	trumbowyg.execCmd('insertHTML', '<span style="font-size: ' + size + '">' + text + '</span>');
+                            }else{
+    	                        try {
+    	                            $(curtag).css('fontSize', size);
+    	                        } catch (e) { }
+                            }
+	                    }
+                	}catch(e){}
                 }
             });
             dropdown.push('fontsize_' + size);
         });
 
         return dropdown;
+    }
+
+    /*
+     * GetSelectionParentElement
+     */
+    function getSelectionParentElement() {
+        var parentEl = null,
+            selection;
+        if (window.getSelection) {
+            selection = window.getSelection();
+            if (selection.rangeCount) {
+                parentEl = selection.getRangeAt(0).commonAncestorContainer;
+                if (parentEl.nodeType !== 1) {
+                    parentEl = parentEl.parentNode;
+                }
+            }
+        } else if ((selection = document.selection) && selection.type !== 'Control') {
+            parentEl = selection.createRange().parentElement();
+        }
+        return parentEl;
     }
 })(jQuery);

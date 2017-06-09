@@ -35,7 +35,6 @@
         plugins: {
             fontfamily: {
                 init: function (trumbowyg) {
-                	console.log(trumbowyg.lang)
                     trumbowyg.addBtnDef('fontfamily', {
                         dropdown: buildDropdown(trumbowyg),
                         hasIcon: false,
@@ -53,13 +52,45 @@
                 title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
                 hasIcon: false,
                 fn: function(){
-                    trumbowyg.expandRange();
-                    trumbowyg.execCmd('fontName', font.family, true);
+                	try{
+	                    trumbowyg.saveRange();
+	                    var text = trumbowyg.getRangeText();
+	                    if (text.replace(/\s/g, '') !== '') {
+                            var curtag = getSelectionParentElement().tagName.toLowerCase();
+                            if(curtag != 'span'){
+                            	trumbowyg.execCmd('insertHTML', '<span style="font-family: ' + font.family + '">' + text + '</span>');
+                            }else{
+    	                        try {
+    	                            $(curtag).css('fontFamily', font.family);
+    	                        } catch (e) { }
+                            }
+	                    }
+                	}catch(e){}
                 }
             });
             dropdown.push('fontfamily_' + index);
         });
 
         return dropdown;
+    }
+
+    /*
+     * GetSelectionParentElement
+     */
+    function getSelectionParentElement() {
+        var parentEl = null,
+            selection;
+        if (window.getSelection) {
+            selection = window.getSelection();
+            if (selection.rangeCount) {
+                parentEl = selection.getRangeAt(0).commonAncestorContainer;
+                if (parentEl.nodeType !== 1) {
+                    parentEl = parentEl.parentNode;
+                }
+            }
+        } else if ((selection = document.selection) && selection.type !== 'Control') {
+            parentEl = selection.createRange().parentElement();
+        }
+        return parentEl;
     }
 })(jQuery);
