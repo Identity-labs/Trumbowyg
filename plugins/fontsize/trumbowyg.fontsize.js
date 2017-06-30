@@ -14,9 +14,7 @@
     });
     // jshint camelcase:true
 
-    var defaultOptions = {
-        sizeList: ['x-small', 'small', 'medium', 'large', 'x-large']
-    };
+    var sizeList = {1: 10, 2: 13, 3: 16, 4: 18, 5: 24, 6: 32, 7: 48};
     
 
     function tagHandler(element, trumbowyg) {
@@ -37,7 +35,6 @@
         plugins: {
             fontsize: {
                 init: function (trumbowyg) {
-                	trumbowyg.o.plugins.fontsize = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.fontsize || {});
                     trumbowyg.addBtnDef('fontsize', {
                         dropdown: buildDropdown(trumbowyg),
                         hasIcon: false,
@@ -50,51 +47,16 @@
     });
     function buildDropdown(trumbowyg) {
         var dropdown = [];
-
-        $.each(trumbowyg.o.plugins.fontsize.sizesList, function(index, size) {
-            trumbowyg.addBtnDef('fontsize_' + size, {
-                text: '<span style="font-size: ' + size + ';">' + size + '</span>',
+        $.each(sizeList, function(index, size) {
+            trumbowyg.addBtnDef('fontsize_' + index, {
+                text: '<span size="' + index + '">' + size + 'px</span>',
                 hasIcon: false,
-                fn: function(){
-                	try{
-	                    trumbowyg.saveRange();
-	                    var text = trumbowyg.getRangeText();
-	                    if (text.replace(/\s/g, '') !== '') {
-                            var curtag = getSelectionParentElement().tagName.toLowerCase();
-                            if(curtag != 'span'){
-                            	trumbowyg.execCmd('insertHTML', '<span style="font-size: ' + size + '">' + text + '</span>');
-                            }else{
-    	                        try {
-    	                            $(curtag).css('fontSize', size);
-    	                        } catch (e) { }
-                            }
-	                    }
-                	}catch(e){}
-                }
+                param: size,
+                fn: 'fontSize'
             });
-            dropdown.push('fontsize_' + size);
+            dropdown.push('fontsize_' + index);
         });
 
         return dropdown;
-    }
-
-    /*
-     * GetSelectionParentElement
-     */
-    function getSelectionParentElement() {
-        var parentEl = null,
-            selection;
-        if (window.getSelection) {
-            selection = window.getSelection();
-            if (selection.rangeCount) {
-                parentEl = selection.getRangeAt(0).commonAncestorContainer;
-                if (parentEl.nodeType !== 1) {
-                    parentEl = parentEl.parentNode;
-                }
-            }
-        } else if ((selection = document.selection) && selection.type !== 'Control') {
-            parentEl = selection.createRange().parentElement();
-        }
-        return parentEl;
     }
 })(jQuery);
