@@ -51,7 +51,7 @@
             trumbowyg.addBtnDef('fontsize_' + index, {
                 text: '<span size="' + index + '">' + size + 'px</span>',
                 hasIcon: false,
-                param: size,
+                param: index,
                 fn: 'fontSize'
             });
             dropdown.push('fontsize_' + index);
