@@ -35,7 +35,6 @@
         plugins: {
             fontfamily: {
                 init: function (trumbowyg) {
-                	console.log(trumbowyg.lang)
                     trumbowyg.addBtnDef('fontfamily', {
                         dropdown: buildDropdown(trumbowyg),
                         hasIcon: false,
